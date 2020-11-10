@@ -69,6 +69,10 @@ import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
 import org.apache.spark.util._
 import org.apache.spark.util.logging.DriverLogger
 
+import org.openjdk.jol.info.ClassLayout;
+import org.openjdk.jol.info.GraphLayout;
+import org.openjdk.jol.vm.VM;
+
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
  * cluster, and can be used to create RDDs, accumulators and broadcast variables on that cluster.
@@ -397,8 +401,9 @@ class SparkContext(config: SparkConf) extends Logging {
     val resourcesFileOpt = conf.get(DRIVER_RESOURCES_FILE)
     _resources = getOrDiscoverAllResources(_conf, SPARK_DRIVER_PREFIX, resourcesFileOpt)
     logResourceInfo(SPARK_DRIVER_PREFIX, _resources)
-
+    val confInfo = GraphLayout.parseInstance(config).toPrintable();
     // log out spark.app.name in the Spark driver logs
+    logInfo(confInfo);
     logInfo(s"Submitted application: $appName")
 
     // System property spark.yarn.app.id must be set if user code ran by AM on a YARN cluster
